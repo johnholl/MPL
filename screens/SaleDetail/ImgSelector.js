@@ -4,17 +4,17 @@ import * as firebase from 'firebase';
 import React from 'react';
 import {
     ActivityIndicator,
-    Button,
     Clipboard,
     Image,
     Share,
+    Button,
     StatusBar,
     StyleSheet,
-    Text,
     View,
 } from 'react-native';
+import {Modal, Text} from 'react-native-paper';
 import 'react-native-get-random-values';
-import {storage} from '../config'
+import {db, storage} from '../../config'
 
 
 // Firebase sets some timers for a long period, which will trigger some warnings. Let's turn that off for this example
@@ -24,6 +24,7 @@ export default class ImgSelector extends React.Component {
     state = {
         image: null,
         uploading: false,
+        visible: false,
     };
 
     async componentDidMount() {
@@ -32,10 +33,10 @@ export default class ImgSelector extends React.Component {
     }
 
     render() {
-        let { image } = this.state;
+        let image = this.state.image;
 
         return (
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <View style={{flex: 1}}>
                 {!!image && (
                     <Text
                         style={{
@@ -47,19 +48,24 @@ export default class ImgSelector extends React.Component {
                         Example: Upload ImagePicker result
                     </Text>
                 )}
-
+                <Button style={{backgroundColor: "blue"}} title="Add image" onPress={() =>{this.setState({visible: true})}}/>
+                <Modal visible={this.state.visible} onDismiss={() => {this.setState({visible: false})}}>
                 <Button
+                    style={{padding: 10}}
                     onPress={this._pickImage}
-                    title="Pick an image from camera roll"
-                />
+                    title="Pick an image from camera roll" />
 
-                <Button onPress={this._takePhoto} title="Take a photo" />
+                <Button style={{padding: 10}}
+                        onPress={this._takePhoto}
+                        title="Take a photo" />
+                </Modal>
 
                 {this._maybeRenderImage()}
                 {this._maybeRenderUploadingOverlay()}
 
                 <StatusBar barStyle="default" />
             </View>
+
         );
     }
 
@@ -82,7 +88,7 @@ export default class ImgSelector extends React.Component {
     };
 
     _maybeRenderImage = () => {
-        let { image } = this.state;
+        let image = this.state.image;
         if (!image) {
             return;
         }
@@ -153,7 +159,7 @@ export default class ImgSelector extends React.Component {
             this.setState({ uploading: true });
 
             if (!pickerResult.cancelled) {
-                let uploadUrl = await uploadImageAsync(pickerResult.uri);
+                let uploadUrl = await uploadImageAsync(pickerResult.uri, this.props.saleId);
                 this.setState({ image: uploadUrl });
             }
         } catch (e) {
@@ -166,7 +172,7 @@ export default class ImgSelector extends React.Component {
     };
 }
 
-async function uploadImageAsync(uri) {
+async function uploadImageAsync(uri, key) {
     // Why are we using XMLHttpRequest? See:
     // https://github.com/expo/expo/issues/2402#issuecomment-443726662
     const blob = await new Promise((resolve, reject) => {
@@ -183,14 +189,15 @@ async function uploadImageAsync(uri) {
         xhr.send(null);
     });
 
-    const ref = firebase
-        .storage()
+    const ref = storage
         .ref()
         .child( Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15));
     const snapshot = await ref.put(blob);
-
     // We're done with the blob, close and release it
     blob.close();
+    let url = await snapshot.ref.getDownloadURL();
+    const dbRef = db
+        .ref('/sales/' + key + '/imgURLs').push(url);
+    return url;
 
-    return await snapshot.ref.getDownloadURL();
 }

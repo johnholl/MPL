@@ -1,25 +1,40 @@
 import React from 'react';
 import { Buffer } from 'buffer';
 global.Buffer = Buffer; // very important
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import HomeScreen from './screens/HomeScreen';
-import SaleNavigator from './screens/SaleNavigator';
-// import MapScreen from './screens/MapScreen'
+import AuthTabs from './screens/AuthTabs';
+import LoadingScreen from './screens/Authentication/LoadingScreen'
+import LoginScreen from './screens/Authentication/LoginScreen'
+import SignUpScreen from './screens/Authentication/SignUpScreen'
+
+import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import {createStackNavigator} from '@react-navigation/stack';
+import SaleNavigator from './screens/NewSale/SaleNavigator';
+import MapScreen from './screens/MapScreen'
 import { NavigationContainer } from '@react-navigation/native';
 
-const Drawer = createDrawerNavigator();
+const Tab = createMaterialBottomTabNavigator();
+const Stack = createStackNavigator();
 
-export default function MyDrawer() {
+export default function App() {
+
   return (
       <>
         <NavigationContainer>
-          <Drawer.Navigator>
-              <Drawer.Screen name="Sales" component={SaleNavigator} />
-              <Drawer.Screen name="Home" component={HomeScreen} />
-              {/*<Drawer.Screen name="Map" component={MapScreen} />*/}
-          </Drawer.Navigator>
+          <Stack.Navigator
+              screenOptions={{
+                  headerShown: false
+              }}>
+              <Stack.Screen name="Loading" component={LoadingScreen} />
+              <Stack.Screen name="Login" component={LoginScreen} />
+              <Stack.Screen name="Signup" component={SignUpScreen} />
+              <Stack.Screen name="Authtabs" component={AuthTabs} />
+          </Stack.Navigator>
         </NavigationContainer>
 
       </>
   );
 }
+
+
+
+

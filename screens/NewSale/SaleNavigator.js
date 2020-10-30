@@ -1,21 +1,27 @@
 import React from 'react';
 import 'react-native-gesture-handler';
 import { createStackNavigator } from '@react-navigation/stack';
-import SalesScreen from "./SalesScreen";
+import SalesScreen from "../SalesScreen";
 import ProductScreen from "./ProductScreen"
 import DateLocationScreen from "./DateLocationScreen"
-import InterviewScreen from "./InterviewScreen"
 import CongratulationsScreen from "./CongratulationsScreen"
-import SaleDetailScreen from "./SaleDetailScreen"
-import ImgSelector from "./ImgSelector"
+import SaleDetailScreen from "../SaleDetail/SaleDetailScreen"
+import ImgSelector from "../SaleDetail/ImgSelector"
+import Survey from "../../components/Survey"
+import HomeScreen from "../HomeScreen";
 
 
 const Stack = createStackNavigator();
 
-export default function SaleNavigator() {
+export default function SaleNavigator(props) {
+
+    let posQuestions = props.posQuestions;
 
     return (
-            <Stack.Navigator>
+            <Stack.Navigator
+                screenOptions={{
+                    headerShown: false
+                }}>
                 <Stack.Screen
                     name="Home"
                     component={SalesScreen}
@@ -23,7 +29,9 @@ export default function SaleNavigator() {
                 />
                 <Stack.Screen name="Product" component={ProductScreen} />
                 <Stack.Screen name="DateLocation" component={DateLocationScreen} />
-                <Stack.Screen name="Interview" component={InterviewScreen} />
+                <Stack.Screen name="Interview">
+                    {props => <Survey {...props} questions={posQuestions} />}
+                </Stack.Screen>
                 <Stack.Screen name="Congratulations" component={CongratulationsScreen} />
                 <Stack.Screen name="Details" component={SaleDetailScreen} />
                 <Stack.Screen name="Camera" component={ImgSelector} />

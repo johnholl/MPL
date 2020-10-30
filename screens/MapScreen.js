@@ -5,10 +5,8 @@ import {db} from "../config";
 
 export default function MapScreen({route, navigation}) {
 
-    const [sales, setSales] = React.useState(null);
+    const [sales, setSales] = React.useState([]);
     let ref = db.ref("/sales");
-    console.log("rendering");
-
 
     React.useEffect(() => {
         (async function () {

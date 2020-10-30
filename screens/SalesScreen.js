@@ -1,17 +1,13 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import {Platform, ScrollView, StatusBar, StyleSheet, View} from 'react-native';
 import { Card, Title, Paragraph, FAB, Avatar} from 'react-native-paper';
 import { Asset } from 'expo-asset';
-import { db } from "../config";
+import {app, db} from "../config";
 import dsFromTimestamp from "../utils/dates_and_times"
+import firebase from "firebase";
 
 const LeftContent = (props, icon) => <Avatar.Icon {...props} size={48} icon={icon} />;
 
-const smallPanelImg = Asset.fromModule(require('../assets/small_panel.jpg')).uri;
-const largePanelImg = Asset.fromModule(require('../assets/large_panel.jpg')).uri;
-const waterFilterImg = Asset.fromModule(require('../assets/water_filter.jpg')).uri;
-const stoveImg = Asset.fromModule(require('../assets/stove.jpg')).uri;
-const imgs = [smallPanelImg, largePanelImg, waterFilterImg, stoveImg];
 const icons = ['solar-panel', 'solar-panel', 'water', 'stove'];
 
 
@@ -19,9 +15,10 @@ const icons = ['solar-panel', 'solar-panel', 'water', 'stove'];
 
 let SalesScreen;
 export default SalesScreen = ({ navigation }) => {
+    const { currentUser } = firebase.auth(app);
+
     const [sales, setSales] = React.useState(null);
-    let ref = db.ref("/sales");
-    console.log("rendering");
+    let ref = db.ref("/sales/" +currentUser.uid);
 
 
     React.useEffect(() => {
@@ -30,16 +27,8 @@ export default SalesScreen = ({ navigation }) => {
                 // get children as an array
                 let items = [];
                 snapshot.forEach((child) => {
-                    items.push({
-                        name: child.val().name,
-                        itemName: child.val().itemName,
-                        _key: child.key,
-                        itemVal: child.val().itemVal,
-                        timestamp: child.val().timestamp,
-                        imgURI: imgs[child.val().itemVal],
-                        icon: icons[child.val().itemVal],
-                        completed: child.val().completed,
-                    });
+                    console.log(child.val());
+                    items.push({...child.val(), key:child.key});
                 });
                 setSales(items.reverse())
             });
@@ -58,23 +47,30 @@ export default SalesScreen = ({ navigation }) => {
     }
 
     return (
-        <View style={{flex: 1}}>
-            <ScrollView>
+        <View style={{paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+            display: "flex", flex: 1}}>
+            <ScrollView style={{paddingTop:10}}>
                 {sales.map(sale => { return(
-                    <Card onPress={() => {getDetails(sale)}}>
+                    <View style={{padding:20}}>
+                    <Card style={{elevation:4}}
+                        onPress={() => {getDetails(sale)}}>
                         <Card.Title title={sale.itemName} subtitle="" left={(props) => {return LeftContent(props, sale.icon)}} />
                         <Card.Content>
                             <Title>Created on {dsFromTimestamp(sale.timestamp)}</Title>
                             <Paragraph>{sale.completed ? "Completed" : "Not completed"}</Paragraph>
                         </Card.Content>
-                        <Card.Cover source={{ uri: sale.imgURI }} />
+                        <Card.Cover style={{padding:5, backgroundColor:'white'}} source={{ uri: sale.imgURI }} />
                         <Card.Actions>
                         </Card.Actions>
-                    </Card>            )})}
+                    </Card>
+                    </View>)})}
             </ScrollView>
             <View style={styles.fixedView}>
                 <FAB
-            icon="plus"
+                    style={styles.fab}
+                    color={'darkslategray'}
+                    theme={{ colors: { accent: 'gold' } }}
+                    icon="plus"
             onPress={() =>
             navigation.navigate('Product')
         }
