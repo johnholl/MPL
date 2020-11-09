@@ -54,7 +54,7 @@ export default function HomeScreen(props) {
                                     resizeMode: 'contain'}}/>
             </View>
             <View style={{alignItems: "center", justifyContent: "center", flex:1}}>
-                <Title style={{}}>Hi {currentUser.email}!</Title>
+                <Title style={{}}>Hi {currentUser.displayName}!</Title>
                 <Title style={{}}>Sales totals:</Title>
 
                 <View style={{}}>

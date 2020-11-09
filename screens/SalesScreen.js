@@ -23,12 +23,12 @@ export default SalesScreen = ({ navigation }) => {
 
     React.useEffect(() => {
         (async function () {
-            ref.orderByChild("timestamp").limitToFirst(10).on("value", function (snapshot) {
+            ref.orderByChild("timestamp").limitToFirst(50).on("value", function (snapshot) {
                 // get children as an array
                 let items = [];
                 snapshot.forEach((child) => {
                     console.log(child.val());
-                    items.push({...child.val(), key:child.key});
+                    items.push({...child.val(), key:child.key, uid:currentUser.uid});
                 });
                 setSales(items.reverse())
             });

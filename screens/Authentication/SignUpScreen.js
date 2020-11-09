@@ -7,6 +7,7 @@ import { StackActions, NavigationActions } from 'react-navigation';
 
 
 export default function SignUpScreen(props) {
+    let [name, setName] = useState('');
     let [email, setEmail] = useState('');
     let [password, setPassword] = useState('');
     let [errorMessage, setErrorMessage] = useState(null);
@@ -14,7 +15,17 @@ export default function SignUpScreen(props) {
 
     const handleSignUp = () => {
         firebase.auth(app).createUserWithEmailAndPassword(email, password)
-            .then(() => {props.navigation.reset({
+            .then(() => {
+                var user = firebase.auth().currentUser;
+                user.updateProfile({
+                    displayName: name
+                }).then(function() {
+                    // Update successful.
+                }, function(error) {
+                    // An error happened.
+                });
+
+                props.navigation.reset({
                 index: 0,
                 routes: [{ name: 'Authtabs' }],
             });})
@@ -28,6 +39,13 @@ export default function SignUpScreen(props) {
                 <Text style={{ color: 'red' }}>
                     {errorMessage}
                 </Text>}
+                <TextInput
+                    style={styles.textInput}
+                    autoCapitalize="none"
+                    placeholder="Name"
+                    onChangeText={name => setName(name)}
+                    value={name}
+                />
                 <TextInput
                     placeholder="Email"
                     autoCapitalize="none"
@@ -43,14 +61,19 @@ export default function SignUpScreen(props) {
                     onChangeText={pwd => setPassword(pwd)}
                     value={password}
                 />
-                <Button title="Sign Up" onPress={handleSignUp} />
+                <View style={{paddingVertical:40}}>
+                <Button title="Sign Up" onPress={handleSignUp}/>
+                </View>
+                <View>
+                    <Text>have an account? </Text>
                 <Button
-                    title="Already have an account? Login"
+                    title="Login"
                     onPress={() => props.navigation.reset({
                         index: 0,
                         routes: [{ name: 'Login' }],
                     })}
                 />
+                </View>
             </View>
         )
 }

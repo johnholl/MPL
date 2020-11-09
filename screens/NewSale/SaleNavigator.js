@@ -9,6 +9,7 @@ import SaleDetailScreen from "../SaleDetail/SaleDetailScreen"
 import ImgSelector from "../SaleDetail/ImgSelector"
 import Survey from "../../components/Survey"
 import HomeScreen from "../HomeScreen";
+import LocationSelectScreen from "./LocationSelectScreen";
 
 
 const Stack = createStackNavigator();
@@ -16,6 +17,7 @@ const Stack = createStackNavigator();
 export default function SaleNavigator(props) {
 
     let posQuestions = props.posQuestions;
+    let fuQuestions = props.fuQuestions;
 
     return (
             <Stack.Navigator
@@ -33,7 +35,10 @@ export default function SaleNavigator(props) {
                     {props => <Survey {...props} questions={posQuestions} />}
                 </Stack.Screen>
                 <Stack.Screen name="Congratulations" component={CongratulationsScreen} />
-                <Stack.Screen name="Details" component={SaleDetailScreen} />
+                <Stack.Screen name="Details">
+                    {props => <SaleDetailScreen {...props} posQuestions={posQuestions} fuQuestions={fuQuestions}/> }
+                    </Stack.Screen>
+                <Stack.Screen name="LocationSelect" component={LocationSelectScreen} />
                 <Stack.Screen name="Camera" component={ImgSelector} />
             </Stack.Navigator>
     );

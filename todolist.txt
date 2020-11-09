@@ -1,0 +1,13 @@
+
+
+* coloring sales / sales list page / filtering   <-- low priority
+* multiple choices for a sale, and restructuring for it like items, adding amounts, etc
+* forgotten password logic
+* connection of firebase back to sheets
+* form validation
+* correct info on home page (sales totals, and adding in targets etc)
+* correctly calculate commissions based on level / setting level for a user
+* Oh, and make it Spanish!
+* packaging and shipping
+* restructuring...data management is not great. How can we grab data early and rerender subcomponents from firebase hook?
+

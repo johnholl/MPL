@@ -41,14 +41,19 @@ export default function LoginScreen(props) {
                     onChangeText={password => setPassword(password)}
                     value={password}
                 />
+                <View style={{paddingVertical:20}}>
                 <Button title="Login" onPress={handleLogin} />
+                </View>
+                <View>
+                    <Text>No account? </Text>
                 <Button
-                    title="Don't have an account? Sign Up"
+                    title="Sign Up"
                     onPress={() => props.navigation.reset({
                         index: 0,
                         routes: [{ name: 'Signup' }],
                     })}
                 />
+                </View>
             </View>
         )
 }

@@ -6,32 +6,45 @@ import {Picker} from '@react-native-community/picker';
 import MultiSelect from 'react-native-multiple-select';
 import {app, db} from "../config";
 import firebase from "firebase";
+import * as Location from "expo-location";
 
 
 export default function Survey(props) {
     const { currentUser } = firebase.auth(app);
     const [answers, setAnswer] = React.useState({});
     let count = 0;
+    console.log("QUESTIONS");
+    console.log(props.route.params.questions);
+
+    React.useEffect(() => {
+        if(props.route.params.answers){
+            setAnswer(props.route.params.answers)
+        }
+    }, []);
 
     let questions = props.route.params.questions ? props.route.params.questions : props.questions;
-
 
     const onFinishPress = () => {
 
         if (props.route.params.newSale) {
             let params = props.route.params;
             params = {
-                ...params, answers,
+                ...params, pos: answers,
                 user: currentUser.email, completed: false
             };
             db.ref('/sales/'+currentUser.uid).push(params);
             props.navigation.navigate('Home');
         }
-        else {
+        else if (props.route.params.survey==="pos"){
             let saleID = props.route.params._id;
-            db.ref('/sales/' +currentUser.uid + '/' + saleID).push(answers)
+            db.ref('/sales/' +currentUser.uid + '/' + saleID).update({pos: answers});
+            props.navigation.goBack();
 
-
+        }
+        else if (props.route.params.survey==="fu"){
+            let saleID = props.route.params._id;
+            db.ref('/sales/' +currentUser.uid + '/' + saleID).update({fu: answers});
+            props.navigation.goBack();
         }
     };
 
@@ -95,9 +108,11 @@ export default function Survey(props) {
                             <Card.Content>
                                 <Text>{count + ". " + question.question}</Text>
                                 <Picker prompt={question.question} style={{ height: 40 }}
-                                        onValueChange={(itemValue, itemIndex) => {setAnswer({...answers, [question.question]: itemValue})}}
+                                        onValueChange={(itemValue, itemIndex) => {
+                                            setAnswer({...answers, [question.question]: itemValue})}}
                                         selectedValue={answers[question.question]}
                                 >
+                                    <Picker.Item label='Please select an option...' value='' />
                                     {question.options.map((option) => {
                                         return(<Picker.Item label={option} value={option} />)
                                     })}
@@ -108,16 +123,35 @@ export default function Survey(props) {
                 )
             }
 
-            // else if(question.type==="ms") {
-            //     return (
-            //     <View>
-            //         <Text>{question.question}</Text>
-            //         <MultiSelect style={{ height: 40 }} onSelectedItemsChange={(selectedItems) => {setAnswer({...answers, question: selectedItems})}}>
-            //             <Picker.Item label="Java" value="java" />
-            //             <Picker.Item label="JavaScript" value="js" />
-            //         </MultiSelect>
-            //     </View>)
-            // }
+            else if(question.type==="ms") {
+                count++;
+                return (
+                <View style={{padding:10}}>
+                    <Card>
+                        <Card.Content>
+                            <MultiSelect style={{ height: 40 }}
+                                         items={question.options.map((option) => {return({id:option, name:option})})}
+                                         uniqueKey="id"
+                                         selectText={count + ". " + question.question}
+                                         onSelectedItemsChange={itemList => {setAnswer({...answers, [question.question]: itemList})}}
+                                         selectedItems={answers[question.question]}
+                                         searchInputPlaceholderText="Search Items..."
+                                         onChangeInput={ (text)=> {}}
+                                         tagRemoveIconColor="#CCC"
+                                         tagBorderColor="#CCC"
+                                         tagTextColor="#CCC"
+                                         selectedItemTextColor="#CCC"
+                                         selectedItemIconColor="#CCC"
+                                         itemTextColor="#000"
+                                         displayKey="name"
+                                         searchInputStyle={{ color: '#CCC' }}
+                                         submitButtonColor="#CCC"
+                                         submitButtonText="Submit">
+                            </MultiSelect>
+                        </Card.Content>
+                    </Card>
+                </View>)
+            }
 
             })}
             </View>

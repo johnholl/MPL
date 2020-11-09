@@ -1,12 +1,15 @@
 import React, {useState} from 'react';
 import MapView, { Marker } from 'react-native-maps';
 import {StyleSheet, View, Dimensions, ScrollView} from 'react-native';
-import {db} from "../config";
+import {app, db} from "../config";
+import firebase from "firebase";
 
 export default function MapScreen({route, navigation}) {
 
+    const { currentUser } = firebase.auth(app);
+
     const [sales, setSales] = React.useState([]);
-    let ref = db.ref("/sales");
+    let ref = db.ref("/sales/" + currentUser.uid);
 
     React.useEffect(() => {
         (async function () {
@@ -46,10 +49,6 @@ export default function MapScreen({route, navigation}) {
                         pinColor="red"
                     />
                                )})}
-                <Marker
-                    coordinate={{ latitude: 15.48, longitude: -90.15 }}
-                    pinColor="red"
-                />
             </MapView>
 
         </View>

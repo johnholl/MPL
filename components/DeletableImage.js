@@ -1,5 +1,5 @@
 import React from 'react';
-import {ImageBackground, View, Alert} from 'react-native';
+import {ImageBackground, View, Alert, Text} from 'react-native';
 import {Button} from 'react-native-paper'
 import {db} from "../config";
 
@@ -29,12 +29,13 @@ export default function DeletableImage(props) {
     };
 
     return(
-        <View style={{paddingBottom: 10}}>
+        <View style={{padding: 10}}>
         <ImageBackground source={{uri: url[1]}}
-               style={{width: 250, height: 250}}>
-            <View style={{flexDirection: "row", alignItems: "stretch"}}>
+                         style={{
+                             width: null,
+                             height: null,
+                             resizeMode: 'contain'}}>
                 <Button icon={"close-box"} onPress={showAlert} color="gray"/>
-            </View>
         </ImageBackground>
         </View>
     )

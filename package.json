@@ -33,6 +33,7 @@
     "react-native-camera": "^3.36.0",
     "react-native-gesture-handler": "~1.6.0",
     "react-native-get-random-values": "^1.4.0",
+    "react-native-image-grid": "^1.0.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.3",
     "react-native-maps": "0.27.1",
     "react-native-multiple-select": "^0.5.6",

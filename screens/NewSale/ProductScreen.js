@@ -79,7 +79,7 @@ export default ProductScreen = ({ navigation }) => {
                 color={'green'}
             title="Next"
             onPress={() =>
-            {navigation.navigate('Interview',
+            {navigation.navigate('LocationSelect',
                     {itemVal: value,
                         location: location,
                         timestamp: Date.now(),
