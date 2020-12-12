@@ -1,13 +1,17 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import MapView, { Marker } from 'react-native-maps';
 import {StyleSheet, View, Dimensions, Text, Platform, StatusBar} from 'react-native';
 import {db} from "../../config";
 import * as Location from "expo-location";
 import {Button} from "react-native-paper";
+ import {LanguageContext} from "../../providers/LanguageProvider";
 
 export default function LocationSelectScreen({route, navigation}) {
     console.log("Did we make it here?");
     const [location, setLocation] = React.useState(null);
+
+    let {language, labels} = useContext(LanguageContext);
+
 
     React.useEffect(() => {
         (async () => {
@@ -33,7 +37,7 @@ export default function LocationSelectScreen({route, navigation}) {
         <View style={styles.container}>
             <View style={{flex:0.1, paddingTop:10}}>
                 <Text>
-                    Press and hold marker to move
+                    {labels.mapInstructions}
                 </Text>
             </View>
             <View style={{flex:1}}>
@@ -53,7 +57,7 @@ export default function LocationSelectScreen({route, navigation}) {
             </View>
             <View style={{flex:0.1}}>
                 <Button mode="contained" color="green" onPress={
-                    () => navigation.navigate('Interview', {...route.params , location:location})} title={"next"}>
+                    () => navigation.navigate('Interview', {...route.params , location:location})} title={labels.next}>
                     Next
                 </Button>
             </View>

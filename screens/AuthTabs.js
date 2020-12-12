@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import 'react-native-gesture-handler';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import Icon from 'react-native-vector-icons/AntDesign';
@@ -6,6 +6,7 @@ import SaleNavigator from "./NewSale/SaleNavigator";
 import HomeScreen from "./HomeScreen"
 import MapScreen from "./MapScreen";
 import {db} from "../config";
+import {LanguageContext} from "../providers/LanguageProvider";
 
 
 
@@ -16,6 +17,7 @@ export default function AuthTabs(props) {
     let [constants, setConstants] = useState(null);
     let [posQuestions, setPosQuestions] = useState({});
     let [fuQuestions, setFuQuestions] = useState({});
+    let {language, labels} = useContext(LanguageContext);
 
     React.useEffect( () => {
         let constRef = db.ref("/constants");
@@ -49,13 +51,14 @@ export default function AuthTabs(props) {
     }, []);
 
     return (
-        <Tab.Navigator screenOptions={({ route }) => ({
+        <Tab.Navigator     barStyle={{ backgroundColor: '#2160A7' }}
+                           screenOptions={({ route }) => ({
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName;
 
-                    if (route.name === 'Home') {
+                    if (route.name === labels["home"]) {
                         iconName = 'home'
-                    } else if (route.name === 'Sales') {
+                    } else if (route.name === labels["sales"]) {
                         iconName = 'book';
                     }
                     else if (route.name === 'Map') {
@@ -66,15 +69,12 @@ export default function AuthTabs(props) {
                     return <Icon name={iconName} size={20} color={color} />;
                 },
             })}>
-            <Tab.Screen name="Home">
+            <Tab.Screen name={labels["home"]}>
                 {props => <HomeScreen {...props} constants={constants} />}
             </Tab.Screen>
-            <Tab.Screen name="Sales">
+            <Tab.Screen name={labels["sales"]}>
                 {props => <SaleNavigator {...props} constants={constants}
                                          posQuestions={posQuestions} fuQuestions={fuQuestions} />}
-            </Tab.Screen>
-            <Tab.Screen name="Map">
-                {props => <MapScreen {...props} constants={constants} />}
             </Tab.Screen>
         </Tab.Navigator>
     );

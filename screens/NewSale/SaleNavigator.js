@@ -8,7 +8,6 @@ import CongratulationsScreen from "./CongratulationsScreen"
 import SaleDetailScreen from "../SaleDetail/SaleDetailScreen"
 import ImgSelector from "../SaleDetail/ImgSelector"
 import Survey from "../../components/Survey"
-import HomeScreen from "../HomeScreen";
 import LocationSelectScreen from "./LocationSelectScreen";
 
 

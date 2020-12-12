@@ -1,9 +1,9 @@
 // SignUp.js
-import React, {useState} from 'react'
+import React, {useContext, useState} from 'react'
 import { StyleSheet, Text, TextInput, View, Button } from 'react-native'
 import {app} from '../../config'
 import firebase from "firebase";
-import { StackActions, NavigationActions } from 'react-navigation';
+import {LanguageContext} from "../../providers/LanguageProvider";
 
 
 export default function SignUpScreen(props) {
@@ -12,6 +12,7 @@ export default function SignUpScreen(props) {
     let [password, setPassword] = useState('');
     let [errorMessage, setErrorMessage] = useState(null);
 
+    let {language, labels} = useContext(LanguageContext);
 
     const handleSignUp = () => {
         firebase.auth(app).createUserWithEmailAndPassword(email, password)
@@ -34,7 +35,7 @@ export default function SignUpScreen(props) {
 
         return (
             <View style={styles.container}>
-                <Text>Sign Up</Text>
+                <Text>{labels.signupTitle}</Text>
                 {errorMessage &&
                 <Text style={{ color: 'red' }}>
                     {errorMessage}
@@ -42,12 +43,12 @@ export default function SignUpScreen(props) {
                 <TextInput
                     style={styles.textInput}
                     autoCapitalize="none"
-                    placeholder="Name"
+                    placeholder={labels.nameInput}
                     onChangeText={name => setName(name)}
                     value={name}
                 />
                 <TextInput
-                    placeholder="Email"
+                    placeholder={labels.emailInput}
                     autoCapitalize="none"
                     style={styles.textInput}
                     onChangeText={em => setEmail(em)}
@@ -55,19 +56,19 @@ export default function SignUpScreen(props) {
                 />
                 <TextInput
                     secureTextEntry
-                    placeholder="Password"
+                    placeholder={labels.passwordInput}
                     autoCapitalize="none"
                     style={styles.textInput}
                     onChangeText={pwd => setPassword(pwd)}
                     value={password}
                 />
                 <View style={{paddingVertical:40}}>
-                <Button title="Sign Up" onPress={handleSignUp}/>
+                <Button title={labels.signupButton} onPress={handleSignUp}/>
                 </View>
                 <View>
-                    <Text>have an account? </Text>
+                    <Text>{labels.loginPrompt}</Text>
                 <Button
-                    title="Login"
+                    title={labels.loginButton}
                     onPress={() => props.navigation.reset({
                         index: 0,
                         routes: [{ name: 'Login' }],

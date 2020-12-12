@@ -1,46 +1,57 @@
-import React from 'react';
+import React, {useContext, useState, useEffect} from 'react';
 import {Platform, ScrollView, StatusBar, StyleSheet, View} from 'react-native';
-import { Card, Title, Paragraph, FAB, Avatar} from 'react-native-paper';
-import { Asset } from 'expo-asset';
+import {Card, Title, Paragraph, FAB, Avatar, Text, RadioButton, ActivityIndicator} from 'react-native-paper';
 import {app, db} from "../config";
 import dsFromTimestamp from "../utils/dates_and_times"
-import firebase from "firebase";
+import {UserContext} from "../providers/UserProvider";
+import {LanguageContext} from "../providers/LanguageProvider";
+import {Poppins_600SemiBold, Poppins_400Regular, Poppins_300Light_Italic, useFonts} from "@expo-google-fonts/poppins";
 
-const LeftContent = (props, icon) => <Avatar.Icon {...props} size={48} icon={icon} />;
-
-const icons = ['solar-panel', 'solar-panel', 'water', 'stove'];
-
-
-
+const LeftContent = (props, complete) => <Avatar.Icon {...props} size={48} style={complete ? {backgroundColor: "lightgreen"} : {backgroundColor: "lightcoral"}} />;
 
 let SalesScreen;
-export default SalesScreen = ({ navigation }) => {
-    const { currentUser } = firebase.auth(app);
+export default SalesScreen = (props) => {
+    let monthAgo = new Date();
+    monthAgo.setMonth(monthAgo.getMonth() - 1);
+    monthAgo.setHours(0, 0, 0);
+    monthAgo.setMilliseconds(0);
+    let [fontsLoaded] = useFonts({
+        Poppins_600SemiBold, Poppins_400Regular, Poppins_300Light_Italic
+    });
 
-    const [sales, setSales] = React.useState(null);
-    let ref = db.ref("/sales/" +currentUser.uid);
+    let {user, totals, monthTotals, sales, level, target} = useContext(UserContext);
+
+    const [displaySales, setDisplaySales] = useState([]);
+    const [filter, setFilter] = React.useState('all');
+    let [loading, setLoading] = useState(false);
 
 
-    React.useEffect(() => {
-        (async function () {
-            ref.orderByChild("timestamp").limitToFirst(50).on("value", function (snapshot) {
-                // get children as an array
-                let items = [];
-                snapshot.forEach((child) => {
-                    console.log(child.val());
-                    items.push({...child.val(), key:child.key, uid:currentUser.uid});
-                });
-                setSales(items.reverse())
-            });
-        })();
-    }, []);
+    let ref = db.ref("/sales/" +user.uid);
+    let {language, labels} = useContext(LanguageContext);
 
-    const getDetails = (sale) => {
-        navigation.navigate('Details', sale)
+
+    const filterfunc = (sale) => {
+        if(filter==="complete") {
+            return sale.completed;
+        }
+        else if(filter==="incomplete") {
+            return !sale.completed;
+        }
+        else if (filter==='30'){
+            return sale.timestamp > monthAgo;
+        }
+        else {
+            return true
+        }
     };
 
 
-    if (!sales) {
+    const getDetails = (sale) => {
+        props.navigation.navigate('Details', sale)
+    };
+
+
+    if (!sales || !displaySales || !fontsLoaded) {
         return(
             <View></View>
         );
@@ -49,33 +60,47 @@ export default SalesScreen = ({ navigation }) => {
     return (
         <View style={{paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
             display: "flex", flex: 1}}>
-            <ScrollView style={{paddingTop:10}}>
-                {sales.map(sale => { return(
-                    <View style={{padding:20}}>
-                    <Card style={{elevation:4}}
-                        onPress={() => {getDetails(sale)}}>
-                        <Card.Title title={sale.itemName} subtitle="" left={(props) => {return LeftContent(props, sale.icon)}} />
-                        <Card.Content>
-                            <Title>Created on {dsFromTimestamp(sale.timestamp)}</Title>
-                            <Paragraph>{sale.completed ? "Completed" : "Not completed"}</Paragraph>
-                        </Card.Content>
-                        <Card.Cover style={{padding:5, backgroundColor:'white'}} source={{ uri: sale.imgURI }} />
-                        <Card.Actions>
-                        </Card.Actions>
-                    </Card>
-                    </View>)})}
-            </ScrollView>
+            <View style={{flex:1}}>
+                <ScrollView style={{backgroundColor:"#FFFFC0"}}>
+                    <View style={{backgroundColor:"white", padding:20}}>
+                        <RadioButton.Group onValueChange={newValue => {setFilter(newValue)}} value={filter}>
+                            <RadioButton.Item color="#F4CA41" label={<Text style={{ fontFamily: 'Poppins_600SemiBold' }}>{labels["all"]}</Text>} value="all" />
+                            <RadioButton.Item color="#F4CA41" label={<Text style={{ fontFamily: 'Poppins_600SemiBold' }}>{labels["lastMonth"]}</Text>} value="30" />
+                            <RadioButton.Item color="#F4CA41" label={<Text style={{ fontFamily: 'Poppins_600SemiBold' }}>{labels["complete"]}</Text>} value="complete" />
+                            <RadioButton.Item color="#F4CA41" label={<Text style={{ fontFamily: 'Poppins_600SemiBold' }}>{labels["notComplete"]}</Text>} value="incomplete" />
+                        </RadioButton.Group>
+                    </View>
+                    {sales.filter(filterfunc).map(sale => { return(
+                        <View style={{padding:10}}>
+                            <Card style={{elevation:4}}
+                                  onPress={() => {getDetails(sale)}}>
+                                <Card.Title title={<Text style={{ fontFamily: 'Poppins_600SemiBold' }}>{labels.clientTitle + ": " + sale.pos?.Nombre}</Text>} subtitle="" left={(props) => {return LeftContent(props, sale.completed)}} />
+                                <Card.Content>
+                                    <Title>{<Text style={{ fontFamily: 'Poppins_400Regular' }}>{labels.createdOn + ": " +  dsFromTimestamp(sale.timestamp)}</Text>}</Title>
+                                    <Paragraph><Text style={{ fontFamily: 'Poppins_300Light_Italic' }}>{sale.completed ? labels.completed : labels.notCompleted}</Text></Paragraph>
+                                </Card.Content>
+                                <Card.Actions>
+                                </Card.Actions>
+                            </Card>
+                        </View>)})}
+                </ScrollView>
+            </View>
             <View style={styles.fixedView}>
                 <FAB
                     style={styles.fab}
-                    color={'darkslategray'}
-                    theme={{ colors: { accent: 'gold' } }}
+                    color={'#020202'}
+                    theme={{ colors: { accent: '#F4CA41' } }}
                     icon="plus"
             onPress={() =>
-            navigation.navigate('Product')
+            props.navigation.navigate('Product')
         }
             />
             </View>
+            {loading &&
+            <View style={{position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, alignItems: 'center', justifyContent: 'center'}}>
+                <ActivityIndicator size='large' />
+            </View>
+            }
         </View>
     );
 };

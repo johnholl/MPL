@@ -5,10 +5,20 @@ import {db} from "../config";
 
 export default function DeletableImage(props) {
     let url = props.url;
-    const imgRef = props.itemRef.child('/imgURLs/' +url[0]);
-    console.log(imgRef);
+    console.log("URL");
+    console.log(url);
+    console.log(props.payment);
+    let imgRef;
+    if(!props.payment) {
+        imgRef = props.itemRef.child('/imgURLs/' + url[0]);
+    }
+    else {
+        imgRef = props.itemRef.child('/paymentUrl/' + url[0]);
+    }
 
-    const imgDelete = () => {
+
+    function imgDelete() {
+
         imgRef.remove();
     };
 
@@ -29,14 +39,9 @@ export default function DeletableImage(props) {
     };
 
     return(
-        <View style={{padding: 10}}>
         <ImageBackground source={{uri: url[1]}}
-                         style={{
-                             width: null,
-                             height: null,
-                             resizeMode: 'contain'}}>
+                         style={{resizeMode: 'contain', width:100, height:100, flexDirection:"row"}}>
                 <Button icon={"close-box"} onPress={showAlert} color="gray"/>
         </ImageBackground>
-        </View>
     )
 }

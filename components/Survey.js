@@ -13,8 +13,6 @@ export default function Survey(props) {
     const { currentUser } = firebase.auth(app);
     const [answers, setAnswer] = React.useState({});
     let count = 0;
-    console.log("QUESTIONS");
-    console.log(props.route.params.questions);
 
     React.useEffect(() => {
         if(props.route.params.answers){

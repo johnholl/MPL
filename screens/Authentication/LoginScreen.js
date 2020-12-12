@@ -1,14 +1,19 @@
 // Login.js
-import React, {useState} from 'react'
+import React, {useContext, useState} from 'react'
 import { StyleSheet, Text, TextInput, View, Button } from 'react-native'
 import {app} from '../../config'
 import firebase from "firebase";
+import {LanguageContext} from "../../providers/LanguageProvider";
 
 
 export default function LoginScreen(props) {
     let [email, setEmail] = useState('');
     let [password, setPassword] = useState('');
     let [errorMessage, setErrorMessage] = useState(null);
+
+    let {language, labels} = useContext(LanguageContext);
+
+
 
     const handleLogin = () => {
         firebase.auth(app).signInWithEmailAndPassword(email, password)
@@ -21,7 +26,7 @@ export default function LoginScreen(props) {
 
         return (
             <View style={styles.container}>
-                <Text>Login</Text>
+                <Text>{labels.loginTitle}</Text>
                 {errorMessage &&
                 <Text style={{ color: 'red' }}>
                     {errorMessage}
@@ -29,7 +34,7 @@ export default function LoginScreen(props) {
                 <TextInput
                     style={styles.textInput}
                     autoCapitalize="none"
-                    placeholder="Email"
+                    placeholder={labels.emailInput}
                     onChangeText={email => setEmail(email)}
                     value={email}
                 />
@@ -37,17 +42,17 @@ export default function LoginScreen(props) {
                     secureTextEntry
                     style={styles.textInput}
                     autoCapitalize="none"
-                    placeholder="Password"
+                    placeholder={labels.passwordInput}
                     onChangeText={password => setPassword(password)}
                     value={password}
                 />
                 <View style={{paddingVertical:20}}>
-                <Button title="Login" onPress={handleLogin} />
+                <Button title={labels.loginButton} onPress={handleLogin} />
                 </View>
                 <View>
-                    <Text>No account? </Text>
+                    <Text> {labels.signupPrompt} </Text>
                 <Button
-                    title="Sign Up"
+                    title={labels.signupButton}
                     onPress={() => props.navigation.reset({
                         index: 0,
                         routes: [{ name: 'Signup' }],
