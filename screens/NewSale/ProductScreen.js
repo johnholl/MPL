@@ -1,10 +1,12 @@
 import React, {useContext} from 'react';
-import {Button, Platform, StatusBar, StyleSheet, Text, TextInput, View} from 'react-native';
-import { RadioButton } from 'react-native-paper';
+import {Platform, StatusBar, StyleSheet, Text, TextInput, View} from 'react-native';
+import { Button } from 'react-native-paper';
 import {Asset} from "expo-asset";
 import {db} from "../../config";
 import {ConstantContext} from "../../providers/ConstantProvider";
 import {UserContext} from "../../providers/UserProvider";
+import {Poppins_300Light_Italic, Poppins_400Regular, Poppins_600SemiBold, useFonts} from "@expo-google-fonts/poppins";
+import {LanguageContext} from "../../providers/LanguageProvider";
 
 
 let ProductScreen;
@@ -12,6 +14,10 @@ export default ProductScreen = ({ navigation }) => {
 
     const {constants, pq, fq} = useContext(ConstantContext);
     let {user, totals, monthTotals, sales, level, target, monthTargets} = useContext(UserContext);
+    let [fontsLoaded] = useFonts({
+        Poppins_600SemiBold, Poppins_400Regular, Poppins_300Light_Italic
+    });
+    let {language, labels} = useContext(LanguageContext);
 
     const otherprices = {"10W panel": constants['Precio de 10W'],
                          "filter": constants['Precio de Filtro'],
@@ -27,10 +33,10 @@ export default ProductScreen = ({ navigation }) => {
     const [amount, setAmount] = React.useState({});
 
     const products = [
-        {name:"10W panel", img: Asset.fromModule(require('../../assets/small_panel.jpg')).uri},
-        {name:"filter", img: Asset.fromModule(require('../../assets/water_filter.jpg')).uri},
-        {name:"prefilter", img: Asset.fromModule(require('../../assets/water_filter.jpg')).uri},
-        {name:"estufa", img: Asset.fromModule(require('../../assets/stove.jpg')).uri}];
+        {name:'10W panel', img: Asset.fromModule(require('../../assets/small_panel.jpg')).uri},
+        {name:'filter', img: Asset.fromModule(require('../../assets/water_filter.jpg')).uri},
+        {name:'prefilter', img: Asset.fromModule(require('../../assets/water_filter.jpg')).uri},
+        {name:'estufa', img: Asset.fromModule(require('../../assets/stove.jpg')).uri}];
 
     let prices = [];
     let commissions = [];
@@ -53,10 +59,14 @@ export default ProductScreen = ({ navigation }) => {
         function goToLocation() {
             let totalPrice = 0;
             let totalCommission = 0;
+            console.log(amount);
             Object.entries(amount).map(amt => {
                totalPrice += amt[1] * otherprices[amt[0]];
                totalCommission += amt[1] * othercommissions[amt[0]];
             });
+
+            console.log("TOTALPRICE");
+            console.log(totalPrice);
 
             navigation.navigate('LocationSelect',
                 {itemVal: value,
@@ -69,15 +79,19 @@ export default ProductScreen = ({ navigation }) => {
                 })
         }
 
+        if(!fontsLoaded || !constants || !labels){
+            return(<View></View>)
+        }
+
     return(
         <View style={{paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
             alignItems: 'center', justifyContent: 'center', flex:1}}>
             <View style={{paddingLeft:0}}>
-                <Text style={{fontSize:20}}>Quantities:</Text>
+                <Text style={{fontSize:20, fontFamily:"Poppins_600SemiBold"}}>{labels.quantity}</Text>
             </View>
             {products.map((product => {return(
                 <View style={{flexDirection:"row", alignItems:"center", padding:10}}>
-                    <Text style={{width:200}}>{product.name + ": "}</Text>
+                    <Text style={{width:200, fontFamily:"Poppins_600SemiBold"}}>{labels[product.name] + ": "}</Text>
                     <TextInput
                         keyboardType={"numeric"}
                         style={{height: 20, borderColor: 'gray', borderWidth: 1}}
@@ -93,8 +107,11 @@ export default ProductScreen = ({ navigation }) => {
             <View style={{width:'100%', padding:20}}>
             <Button
                 color={'green'}
-            title="Next"
-            onPress={goToLocation}/>
+                mode="contained"
+                title={labels.next}
+            onPress={goToLocation}>
+                <Text style={{fontFamily:"Poppins_600SemiBold"}}>{labels.next}</Text>
+            </Button>
             </View>
         </View>)
 };

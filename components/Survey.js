@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {Text, Button, View, StyleSheet, TextInput, Platform, StatusBar} from 'react-native';
 import {Card} from 'react-native-paper';
 import {KeyboardAwareFlatList, KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view'
@@ -7,12 +7,15 @@ import MultiSelect from 'react-native-multiple-select';
 import {app, db} from "../config";
 import firebase from "firebase";
 import * as Location from "expo-location";
+import {LanguageContext} from "../providers/LanguageProvider";
 
 
 export default function Survey(props) {
     const { currentUser } = firebase.auth(app);
     const [answers, setAnswer] = React.useState({});
     let count = 0;
+    let {language, labels} = useContext(LanguageContext);
+
 
     React.useEffect(() => {
         if(props.route.params.answers){
@@ -57,7 +60,7 @@ export default function Survey(props) {
         <KeyboardAwareScrollView>
             <View style={styles.form}>
                 <View style={{padding:20}}>
-                    <Text>{"Client Questions"}</Text>
+                    <Text>{labels.surveyTitle}</Text>
                 </View>
                 {questions.map((question) => {
             if(question.type==="t") {
@@ -110,7 +113,7 @@ export default function Survey(props) {
                                             setAnswer({...answers, [question.question]: itemValue})}}
                                         selectedValue={answers[question.question]}
                                 >
-                                    <Picker.Item label='Please select an option...' value='' />
+                                    <Picker.Item label={labels.selectOption} value='' />
                                     {question.options.map((option) => {
                                         return(<Picker.Item label={option} value={option} />)
                                     })}
@@ -155,7 +158,7 @@ export default function Survey(props) {
             </View>
             <View style={{padding:20}}>
                 <Button
-                    title="Finish Up"
+                    title={labels.surveyFinish}
                     color={'green'}
                     onPress={() =>
                         onFinishPress()

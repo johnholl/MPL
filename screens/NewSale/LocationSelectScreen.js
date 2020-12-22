@@ -7,7 +7,6 @@ import {Button} from "react-native-paper";
  import {LanguageContext} from "../../providers/LanguageProvider";
 
 export default function LocationSelectScreen({route, navigation}) {
-    console.log("Did we make it here?");
     const [location, setLocation] = React.useState(null);
 
     let {language, labels} = useContext(LanguageContext);
@@ -35,8 +34,8 @@ export default function LocationSelectScreen({route, navigation}) {
 
     return (
         <View style={styles.container}>
-            <View style={{flex:0.1, paddingTop:10}}>
-                <Text>
+            <View style={{flex:0.1, paddingTop:10, justifyContent:"center"}}>
+                <Text style={{fontFamily:"Poppins_600SemiBold"}}>
                     {labels.mapInstructions}
                 </Text>
             </View>
@@ -58,7 +57,7 @@ export default function LocationSelectScreen({route, navigation}) {
             <View style={{flex:0.1}}>
                 <Button mode="contained" color="green" onPress={
                     () => navigation.navigate('Interview', {...route.params , location:location})} title={labels.next}>
-                    Next
+                    <Text style={{fontFamily:"Poppins_600SemiBold"}}>{labels.next}</Text>
                 </Button>
             </View>
 

@@ -25,15 +25,15 @@ export default function HomeScreen(props) {
 
     const createTwoButtonAlert = () =>
         Alert.alert(
-            "Sign out",
-            "Are you sure you want to sign out?",
+            labels['signOut'],
+            labels['sureSignOut'],
             [
                 {
-                    text: "Sign out",
+                    text: labels['signOut'],
                     onPress: () => firebase.auth(app).signOut().catch(error => setErrorMessage(error))
                 },
                 {
-                    text: "Cancel",
+                    text: labels['cancel'],
                     onPress: () => console.log("Cancel Pressed"),
                     style: "cancel"
                 },
@@ -54,7 +54,7 @@ export default function HomeScreen(props) {
             <Text style={{ color: 'red' }}>
                 {errorMessage}
             </Text>}
-            <View style={{flex:.7}}>
+            <View style={{flex:.5}}>
             <View style={{justifyContent:'flex-end', flexDirection:'row', padding:10, flex:0.15}}>
                 <View style={{justiftyContent:"center", alignItems:"center"}}>
                 <Feather.Button name="log-out" backgroundColor="gray" onPress={createTwoButtonAlert} style={{justifyContent:'center', alignItems:'center'}}>

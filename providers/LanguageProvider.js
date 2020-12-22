@@ -7,9 +7,9 @@ let spanish = "SP";
 export const LanguageContext = createContext({user: null, totals: null, monthTotals: null, sales: null, level: null, target: null, monthTargets: null});
 class LanguageProvider extends Component {
 
+
     static contextType = LanguageContext;
     state = {language: english, labels: null};
-
 
 
     componentDidMount() {
@@ -67,6 +67,7 @@ class LanguageProvider extends Component {
         labels['next'] = {english: "Next", spanish: "Siguiente"};
 
         labels['surveyTitle'] = {english: "Client Survey", spanish: "Encuesta de Cliente"};
+        labels['selectOption'] = {english: "Please select an option", spanish: "Por favor seleccione una opción"};
         labels['surveyFinish'] = {english: "Finish Up", spanish: "Terminar"};
 
         labels['status'] = {english: "Status", spanish: "Estado"};
@@ -101,7 +102,7 @@ class LanguageProvider extends Component {
         Object.entries(labels).map(label => {englishLabels[label[0]]  = label[1]['english']});
         let spanishLabels = {};
         Object.entries(labels).map(label => {spanishLabels[label[0]]  = label[1]['spanish']});
-        this.setState({labels: spanishLabels})
+        this.setState({labels: englishLabels})
 
     }
 

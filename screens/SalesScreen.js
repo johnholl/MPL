@@ -24,9 +24,6 @@ export default SalesScreen = (props) => {
     const [displaySales, setDisplaySales] = useState([]);
     const [filter, setFilter] = React.useState('all');
     let [loading, setLoading] = useState(false);
-
-
-    let ref = db.ref("/sales/" +user.uid);
     let {language, labels} = useContext(LanguageContext);
 
 
@@ -62,17 +59,17 @@ export default SalesScreen = (props) => {
             display: "flex", flex: 1}}>
             <View style={{flex:1}}>
                 <ScrollView style={{backgroundColor:"#FFFFC0"}}>
-                    <View style={{backgroundColor:"white", padding:20}}>
+                    <View style={{padding:20}}>
                         <RadioButton.Group onValueChange={newValue => {setFilter(newValue)}} value={filter}>
-                            <RadioButton.Item color="#F4CA41" label={<Text style={{ fontFamily: 'Poppins_600SemiBold' }}>{labels["all"]}</Text>} value="all" />
-                            <RadioButton.Item color="#F4CA41" label={<Text style={{ fontFamily: 'Poppins_600SemiBold' }}>{labels["lastMonth"]}</Text>} value="30" />
-                            <RadioButton.Item color="#F4CA41" label={<Text style={{ fontFamily: 'Poppins_600SemiBold' }}>{labels["complete"]}</Text>} value="complete" />
-                            <RadioButton.Item color="#F4CA41" label={<Text style={{ fontFamily: 'Poppins_600SemiBold' }}>{labels["notComplete"]}</Text>} value="incomplete" />
+                            <RadioButton.Item color="#2160A7" label={<Text style={{ fontFamily: 'Poppins_600SemiBold' }}>{labels["all"]}</Text>} value="all" />
+                            <RadioButton.Item color="#2160A7" label={<Text style={{ fontFamily: 'Poppins_600SemiBold' }}>{labels["lastMonth"]}</Text>} value="30" />
+                            <RadioButton.Item color="#2160A7" label={<Text style={{ fontFamily: 'Poppins_600SemiBold' }}>{labels["complete"]}</Text>} value="complete" />
+                            <RadioButton.Item color="#2160A7" label={<Text style={{ fontFamily: 'Poppins_600SemiBold' }}>{labels["notComplete"]}</Text>} value="incomplete" />
                         </RadioButton.Group>
                     </View>
                     {sales.filter(filterfunc).map(sale => { return(
                         <View style={{padding:10}}>
-                            <Card style={{elevation:4}}
+                            <Card style={{elevation:4, backgroundColor:"#FFFFDA"}}
                                   onPress={() => {getDetails(sale)}}>
                                 <Card.Title title={<Text style={{ fontFamily: 'Poppins_600SemiBold' }}>{labels.clientTitle + ": " + sale.pos?.Nombre}</Text>} subtitle="" left={(props) => {return LeftContent(props, sale.completed)}} />
                                 <Card.Content>
@@ -89,7 +86,7 @@ export default SalesScreen = (props) => {
                 <FAB
                     style={styles.fab}
                     color={'#020202'}
-                    theme={{ colors: { accent: '#F4CA41' } }}
+                    theme={{ colors: { accent: '#98CEEA' } }}
                     icon="plus"
             onPress={() =>
             props.navigation.navigate('Product')

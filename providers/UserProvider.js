@@ -17,6 +17,7 @@ class UserProvider extends Component {
         auth.onAuthStateChanged(userAuth => {
             this.setState({user: userAuth});
             if (userAuth) {
+                console.log("this is executing");
                 let monthAgo = new Date();
                 monthAgo.setMonth(monthAgo.getMonth() - 1);
                 monthAgo.setHours(0, 0, 0);
@@ -28,21 +29,27 @@ class UserProvider extends Component {
                     let monthTots = {"10W panel": 0, "estufa": 0, "filter": 0, "prefilter": 0, "total": 0};
                     snapshot.forEach((child) => {
                         items.push({...child.val(), key: child.key, uid: userAuth.uid});
-                        Object.entries(child.val().amounts).map(amt => {
-                            tots[amt[0]] += amt[1];
-                            tots['total'] += amt[1]
-                        });
-                        if (child.val().timestamp > monthAgo) {
+                        if(child.val().completed) {
                             Object.entries(child.val().amounts).map(amt => {
-                                monthTots[amt[0]] += amt[1];
-                                monthTots['total'] += amt[1]
-                            })
+                                tots[amt[0]] += amt[1];
+                                tots['total'] += amt[1]
+                            });
+                            if (child.val().timestamp > monthAgo) {
+                                Object.entries(child.val().amounts).map(amt => {
+                                    monthTots[amt[0]] += amt[1];
+                                    monthTots['total'] += amt[1]
+                                })
+                            }
                         }
                     });
 
                     this.setState({sales: items.reverse(), totals: tots, monthTotals: monthTots})
 
                 });
+            }
+            else {
+                console.log("Nulling out user info");
+                this.setState({sales: null, totals: null, monthTotals: null})
             }
         });
     }

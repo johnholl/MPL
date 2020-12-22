@@ -16,6 +16,7 @@ import ConstantProvider from "./providers/ConstantProvider";
 import LanguageProvider from "./providers/LanguageProvider";
 import AppLoading from 'expo-app-loading';
 import { useFonts,  Poppins_600SemiBold } from '@expo-google-fonts/poppins';
+import { Portal } from 'react-native-paper';
 
 const Tab = createMaterialBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -23,6 +24,7 @@ const Stack = createStackNavigator();
 export default function App() {
 
   return (
+      <Portal.Host>
       <ConstantProvider>
           <UserProvider>
               <LanguageProvider>
@@ -38,11 +40,12 @@ export default function App() {
                           <Stack.Screen name="Authtabs" component={AuthTabs} />
                       </Stack.Navigator>
                     </NavigationContainer>
-
                   </>
               </LanguageProvider>
           </UserProvider>
       </ConstantProvider>
+      </Portal.Host>
+
   );
 }
 

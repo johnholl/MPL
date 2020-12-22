@@ -1,16 +1,15 @@
 import React, {useState, useEffect, useContext} from 'react';
-import {Image, Text, View, ScrollView, StyleSheet, Alert, Platform, StatusBar} from 'react-native';
-import {Modal, Subheading, Button, Divider, Checkbox, DataTable, ActivityIndicator} from 'react-native-paper'
-import ImgSelector from './ImgSelector'
+import {Text, View, ScrollView, StyleSheet, Alert, Platform, StatusBar} from 'react-native';
+import {Modal, Portal, Subheading, Button, Divider, Checkbox, DataTable, ActivityIndicator} from 'react-native-paper'
 import {db, storage} from "../../config";
 import dsFromTimestamp from "../../utils/dates_and_times";
 import * as ImagePicker from "expo-image-picker";
 import DeletableImage from "../../components/DeletableImage";
-import PhotoGrid from 'react-native-image-grid';
 import {LanguageContext} from "../../providers/LanguageProvider";
 import {ConstantContext} from "../../providers/ConstantProvider";
 import {Poppins_300Light_Italic, Poppins_400Regular, Poppins_600SemiBold, useFonts} from "@expo-google-fonts/poppins";
-
+import Fireworks from 'react-native-fireworks';
+import Celebration from '../../components/Celebration'
 
 
 export default function SaleDetailScreen(props) {
@@ -73,11 +72,6 @@ export default function SaleDetailScreen(props) {
         }
     };
 
-    async function toggleComplete() {
-        db.ref('/sales/' + route.params.uid + "/" + route.params.key + '/completed').set(!completed);
-        completed = setCompleted(!completed);
-    }
-
     async function uploadImageAsync(uri, isPayment) {
         // Why are we using XMLHttpRequest? See:
         // https://github.com/expo/expo/issues/2402#issuecomment-443726662
@@ -107,6 +101,7 @@ export default function SaleDetailScreen(props) {
             db.ref('/sales/' + route.params.uid + "/" + route.params.key + '/paymentUrl').push(url);
             setPaymentUrl(url);
             setCompleted(true);
+            setVisible(true);
             db.ref('/sales/' + route.params.uid + "/" + route.params.key + '/completed').set(true);}
         return url;
 
@@ -154,6 +149,8 @@ export default function SaleDetailScreen(props) {
          }
      };
 
+     const hideCongrats = () => {setVisible(false)};
+
     const deleteAlert = () => {
         Alert.alert(
             labels["sure"],
@@ -177,7 +174,9 @@ export default function SaleDetailScreen(props) {
 
     return(
         <View style={{flex: 1, paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0}}>
-           <View style={{paddingHorizontal: 10, height:60, flexDirection:'row', alignItems:'center',
+            <Button onPress={() => setVisible(!visible)}>animation</Button>
+            <Celebration visible={visible}/>
+            <View style={{paddingHorizontal: 10, height:60, flexDirection:'row', alignItems:'center',
                justifyContent:'space-between', backgroundColor:'lightgray'}}>
                <View>
                    <Text style={{ fontFamily: 'Poppins_600SemiBold' }}>{dsFromTimestamp(sale.timestamp)}</Text>
@@ -189,7 +188,7 @@ export default function SaleDetailScreen(props) {
                    <Text style={{fontFamily: 'Poppins_600SemiBold', color:!completed ? "red" : "green", width:100}}>{!completed ? labels['notCompleted'] : labels['completed']}</Text>
                </View>
            </View>
-            <View style={{ flex:1, flexDirection:'column', backgroundColor:"#FCEEA7"}}>
+            <View style={{ flex:1, flexDirection:'column', backgroundColor:"#FFFFC0"}}>
                 <Divider/>
                 <ScrollView>
                 <View style={{flexDirection: "row", alignItems: "center"}}>
@@ -237,15 +236,15 @@ export default function SaleDetailScreen(props) {
                 <Divider/>
                 <Subheading style={{fontWeight:"bold", padding:10, fontFamily:'Poppins_600SemiBold'}}>{labels.surveySection}</Subheading>
                 <View style={{justifyContent: "space-around", flexDirection:'row', paddingVertical:20}}>
-                    <Button mode="contained" color="mediumblue" onPress={() =>
+                    <Button mode="contained" color="#6D8763" onPress={() =>
                     {navigation.navigate('Interview',
                         {newSale: false,
                             survey: "pos",
                             answers: sale.pos,
                             questions: props.posQuestions,
                             _id: route.params.key
-                        })}}><Text style={{ fontFamily: 'Poppins_600SemiBold' }}>{labels.pos}</Text></Button>
-                    <Button mode="contained" color="lightblue" onPress={() =>
+                        })}}><Text style={{ fontFamily: 'Poppins_600SemiBold', color:"white" }}>{labels.pos}</Text></Button>
+                    <Button mode="contained" color="#2975B4" onPress={() =>
                     {navigation.navigate('Interview',
                         {newSale: false,
                             survey: "fu",
@@ -268,11 +267,13 @@ export default function SaleDetailScreen(props) {
                 <Divider/>
                 <View style={{justifyContent:'space-around', flexDirection:'row', alignItems:'center'}}>
                 <View style={{justifyContent:'center', flexDirection:'row', alignItems:'center', paddingVertical:20}}>
-                    <Text>{labels.completeCommand}</Text>
+                    <Text style={{fontFamily:"Poppins_600SemiBold"}}>{labels.completeCommand}</Text>
                     <Checkbox color={'black'} onPress={() => showImageOptions(true)} status={completed ? 'checked' : 'unchecked' }/>
                 </View>
                 <View style={{justifyContent:'center', flexDirection:'row', alignItems:'center', paddingVertical:20}}>
-                    <Button style={{width:150}} mode='contained' color={'tomato'} onPress={deleteAlert}>{labels.delete}</Button>
+                    <Button style={{width:150}} mode='contained' color='#F16B38' onPress={deleteAlert}>
+                        <Text style={{fontFamily:"Poppins_600SemiBold", color:"white"}}>{labels.delete}</Text>
+                    </Button>
                 </View>
                 </View>
                 </ScrollView>

@@ -4,9 +4,9 @@
     "slug": "MPL",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/smallLogo.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/LogoMPL.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -21,6 +21,14 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "android": {
+      "package": "com.johnholl.MPL.english",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAGD02t96oMNcph9nmH4t5tAUzC-lr82n0"
+        }
+      }
     }
   }
 }
