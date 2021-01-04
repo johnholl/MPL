@@ -4,7 +4,7 @@ import {Card} from 'react-native-paper';
 import {KeyboardAwareFlatList, KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view'
 import {Picker} from '@react-native-community/picker';
 import MultiSelect from 'react-native-multiple-select';
-import {app, db} from "../config";
+import {app, db, fstore} from "../config";
 import firebase from "firebase";
 import * as Location from "expo-location";
 import {LanguageContext} from "../providers/LanguageProvider";
@@ -34,6 +34,7 @@ export default function Survey(props) {
                 user: currentUser.email, completed: false
             };
             db.ref('/sales/'+currentUser.uid).push(params);
+            fstore.collection("users").add({hello:"world"});
             props.navigation.navigate('Home');
         }
         else if (props.route.params.survey==="pos"){
